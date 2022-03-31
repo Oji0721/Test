@@ -1,0 +1,21 @@
+import { CommandContext } from '../../structures/addons/CommandAddons';
+import { Command } from '../../structures/Command';
+import { Message } from 'discord.js';
+
+class CustomCommand extends Command {
+    constructor() {
+        super({
+            trigger: 'ping',
+            description: 'The ping of the bot.',
+            type: 'ChatInput',
+            module: 'utilities',
+        });
+    }
+
+    async run(ctx: CommandContext) {
+      let msg = await ctx.reply({content: 'pong', fetchReply: true})
+      (msg as Message).editReply(`Pong **(${Date.now() - (msg as Message).createdTimestamp}ms)**`)
+    }
+}
+
+export default CustomCommand;

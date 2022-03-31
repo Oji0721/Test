@@ -1,0 +1,123 @@
+import { CommandContext } from '../../structures/addons/CommandAddons';
+import { Command } from '../../structures/Command';
+import { mainColor, infoIconUrl } from '../../handlers/locale';
+import api from 'covidapi';
+
+class CovidCommand extends Command {
+    constructor() {
+        super({
+            trigger: "covid",
+            description: "Gets the covid infomation.",
+            type: "ChatInput",
+            module: "utillities",
+            args: [
+              {
+                    trigger: 'country',
+                    description: 'Put the country here.',
+                    isLegacyFlag: false,
+                    required: false,
+                    type: 'String',
+              }
+            ]
+        });
+    }
+
+    async run(ctx: CommandContext) {
+
+      const data = await api.all();
+      const countrycovid = ctx.args['country'];
+      const countrydata = await api.countries({ county: countrycovid });
+      
+      if(!ctx.args['country']) return ctx.reply({
+        embeds: [
+          {
+            author: {
+              name: 'Global Cases',
+              iconURL: infoIconUrl
+            },
+            description: 'Number of cases may differ from other sources',
+            color: mainColor,
+            fields: [
+              {
+                name: 'Cases',
+                value: `${data.cases}`,
+                inline: true
+              },
+              {
+                name: 'Active',
+                value: `${data.active}`,
+                inline: true
+              },
+              {
+                name: 'Cases Today',
+                value: `${data.todayCases}`,
+                inline: true
+              },
+              {
+                name: 'Critical Cases',
+                value: `${data.critical}`,
+                inline: true
+              },
+              {
+                name: 'Deaths',
+                value: `${data.deaths}`,
+                inline: true
+              },
+              {
+                name: 'Recoved',
+                value: `${data.recovered}`,
+                inline: true
+              }
+            ]
+          }
+        ]
+      });
+
+      if(ctx.args['country']) return ctx.reply({
+        embeds: [
+          {
+            author: {
+              name: `${ctx.args['country']} Cases`,
+              iconURL: infoIconUrl
+            },
+            description: 'Number of cases may differ from other sources',
+            color: mainColor,
+            fields: [
+              {
+                name: 'Cases',
+                value: `${countrydata.cases}`,
+                inline: true
+              },
+              {
+                name: 'Active',
+                value: `${countrydata.active}`,
+                inline: true
+              },
+              {
+                name: 'Cases Today',
+                value: `${countrydata.todayCases}`,
+                inline: true
+              },
+              {
+                name: 'Critical Cases',
+                value: `${countrydata.critical}`,
+                inline: true
+              },
+              {
+                name: 'Deaths',
+                value: `${countrydata.deaths}`,
+                inline: true
+              },
+              {
+                name: 'Recoved',
+                value: `${countrydata.recovered}`,
+                inline: true
+              }
+            ]
+          }
+        ]
+      });
+      
+    }
+}
+export default CovidCommand;
